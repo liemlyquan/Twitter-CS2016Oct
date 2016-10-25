@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
-        TwitterClient.sharedInstance?.loginCompletion(query: query) { (response: Any?, error: Error?) in
+        TwitterClient.sharedInstance?.loginCompletion(query: query) { (response: AnyObject?, error: Error?) in
             
         }
 //        let baseURL = "https://api.twitter.com"
