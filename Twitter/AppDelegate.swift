@@ -48,29 +48,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
-        TwitterClient.sharedInstance?.loginCompletion(query: query) { (response: AnyObject?, error: Error?) in
-            
+        TwitterClient.sharedInstance?.loginCompletion(query: query) { (user: User?, error: Error?) in
+            guard let user = user else {
+                return
+            }
         }
-//        let baseURL = "https://api.twitter.com"
-//        
-//        let twitterClient = BDBOAuth1SessionManager(baseURL: URL(string: baseURL), consumerKey: "ptahrEGSLILH8kwUibjvGZjyL", consumerSecret: "bogessNWSfZ3jyZEr3TguiPV1RzcUiYPATFL7uvVU4ywFHOMNo")
-//        
-//        let requestToken = BDBOAuth1Credential(queryString: url.query)
-//        twitterClient?.fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken!, success: { (response: BDBOAuth1Credential?) in
-//            guard let response = response,
-//                let token = response.token else {
-//                    return
-//            }
-//            
-//            twitterClient?.get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
-//                
-//                
-//                }, failure: { (task: URLSessionDataTask?, error: Error?) in
-//                    
-//                })
-//            }, failure: { (error: Error?) in
-//        
-//        })
         return true
     }
 

@@ -16,6 +16,7 @@ let twitterConsumerKey = "ptahrEGSLILH8kwUibjvGZjyL"
 let twitterConsumerSecret = "bogessNWSfZ3jyZEr3TguiPV1RzcUiYPATFL7uvVU4ywFHOMNo"
 
 class TwitterClient: BDBOAuth1SessionManager {
+    // http://krakendev.io/blog/the-right-way-to-write-a-singleton
     static let sharedInstance = TwitterClient(baseURL: twitterBaseURL, consumerKey: twitterConsumerKey, consumerSecret: twitterConsumerSecret)
 
 
