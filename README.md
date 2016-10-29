@@ -1,6 +1,6 @@
-# Yelp
+# Twitter
 
-A Yelp search application
+A Twitter clone application
 
 ### Time spent:
 approximately 3 hours in total
