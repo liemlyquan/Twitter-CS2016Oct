@@ -44,15 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        guard let query = url.query else {
-            return false
-        }
-        
-        TwitterClient.sharedInstance?.loginCompletion(query: query) { (user: User?, error: Error?) in
-            guard let user = user else {
-                return
-            }
-        }
+        TwitterClient.sharedInstance?.openUrl(url: url)
         return true
     }
 

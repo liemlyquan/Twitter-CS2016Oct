@@ -22,13 +22,19 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func onTapLoginButton(sender: UIButton){
-        TwitterClient.sharedInstance?.login() { (token: String?, error: Error?) in
-            if let token = token, let authURL = URL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(token)") {
-                UIApplication.shared.open(authURL)
+//        TwitterClient.sharedInstance?.authenticate() { (token, error) in
+//            if let token = token, let authURL = URL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(token)") {
+//                UIApplication.shared.open(authURL)
+//            }
+//        }
+        TwitterClient.sharedInstance?.loginWithCompletion {
+            (user: User?, error: Error?)-> Void in
+            if user != nil {
+                self.performSegue(withIdentifier: "loginSegue", sender: self)
+            } else {
+                
             }
         }
     }
-
-
 }
 

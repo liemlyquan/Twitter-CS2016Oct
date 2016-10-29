@@ -14,7 +14,6 @@ class Tweet : Mappable {
     var createdAt: String?
     var user: User?
     
-    
     required init?(map: Map) {
         
     }

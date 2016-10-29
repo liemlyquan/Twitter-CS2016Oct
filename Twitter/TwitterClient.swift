@@ -18,46 +18,109 @@ let twitterConsumerSecret = "bogessNWSfZ3jyZEr3TguiPV1RzcUiYPATFL7uvVU4ywFHOMNo"
 class TwitterClient: BDBOAuth1SessionManager {
     // http://krakendev.io/blog/the-right-way-to-write-a-singleton
     static let sharedInstance = TwitterClient(baseURL: twitterBaseURL, consumerKey: twitterConsumerKey, consumerSecret: twitterConsumerSecret)
+    var loginCompletion: ((User?, Error?) -> ())?
 
-
-    /// Login into Twitter via OAuth1.0
-    ///
-    /// - parameter withCompletion: Completion result
-    func login(withCompletion: @escaping (String?, Error?) -> ()){
-        // Log out before login to just to be sure
-        self.deauthorize()
+    
+    func loginWithCompletion(completion: @escaping (User?, Error?) -> () ) {
+        loginCompletion = completion
+        requestSerializer.removeAccessToken()
         
-        return self.fetchRequestToken(withPath: "oauth/request_token", method: "POST", callbackURL: URL(string: "myTwitter://callback")!, scope: nil, success: { (response: BDBOAuth1Credential?) in
-            guard let response = response, let token = response.token else {
-                return
+        // fetch request token & redirect to authorization page
+        fetchRequestToken(
+            withPath: "oauth/request_token",
+            method: "GET",
+            callbackURL: URL(string: "LQLTwitter://oauth"),
+            scope: nil,
+            success: { (requestToken: BDBOAuth1Credential?) in
+                guard let requestToken = requestToken,
+                    let token = requestToken.token else {
+                        return
+                }
+                let authURL = URL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(token)")!
+                UIApplication.shared.open(authURL)
+            },
+            failure: { (error: Error?) -> Void in
+                self.loginCompletion!(nil, error)
             }
-            withCompletion(token, nil)
-            }, failure: { (error: Error?) in
-                withCompletion(nil, error)
+        )
+    }
+    
+    func createTweetWithCompletion(params: NSDictionary, completion: @escaping (Tweet?, Error?) -> ()) {
+        post("1.1/statuses/update.json",
+             parameters: params,
+             progress: nil,
+             success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweet = Mapper<Tweet>().map(JSONObject: response)
+                completion(tweet, nil)
+            },
+             failure: { (operation: URLSessionDataTask?, error: Error) -> Void in
+                print("error creating tweet")
+                completion(nil, error)
         })
     }
     
-
-    func loginCompletion(query: String, withCompletion: @escaping (User?, Error?) -> ()){
-        let requestToken = BDBOAuth1Credential(queryString: query)
-        self.fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken!, success: { (credential: BDBOAuth1Credential?) in
-            
-            self.requestSerializer.saveAccessToken(credential)
-            self.get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
-
-                guard let response = response else {
-                    return
-                }
-                let userObject = Mapper<User>().map(JSONObject: response)
-                withCompletion(userObject, nil)
-                }, failure: { (task: URLSessionDataTask?, error: Error?) in
-                    
-                    withCompletion(nil, error)
-                })
-            
-            }, failure: { (error: Error?) in
-                withCompletion(nil, error)
-                
+    func retweetWithCompletion(id: Int, completion: @escaping (Tweet?, Error?) -> ()) {
+        post("1.1/statuses/retweet/\(id).json",
+            parameters: nil,
+            progress: nil,
+            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweet = Mapper<Tweet>().map(JSONObject: response)
+                completion(tweet, nil)
+            },
+            failure: { (operation: URLSessionDataTask?, error: Error) -> Void in
+                print("error retweeting")
+                completion(nil, error)
+        })
+    }
+    
+    
+    func favoriteWithCompletion(id: Int?, completion: @escaping (Tweet?, Error?) -> ()) {
+        post("1.1/favorites/create.json",
+             parameters: NSDictionary(dictionary: ["id": id!]),
+             progress: nil,
+             success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweet = Mapper<Tweet>().map(JSONObject: response)
+                completion(tweet, nil)
+            },
+             failure: { (operation: URLSessionDataTask?, error: Error) -> Void in
+                print("error favoriting")
+                completion(nil, error)
+        })
+    }
+    
+    
+    func openUrl(url: URL){
+        fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: BDBOAuth1Credential(queryString: url.query), success: { (accessToken: BDBOAuth1Credential?) in
+            print("Successfully got the access token!")
+            self.requestSerializer.saveAccessToken(accessToken)
+            self.requestCurrentUser()
+        }) { (error: Error?) -> Void in
+            print("Failed to get access token.")
+            self.loginCompletion?(nil, error)
+        }
+    }
+    
+    func requestCurrentUser(){
+        get("1.1/account/verify_credentials.json", parameters: nil, progress: nil,
+            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let user = Mapper<User>().map(JSONObject: response)
+                User.currentUser = user
+                self.loginCompletion?(user, nil)
+            }, failure: { (operation: URLSessionDataTask?, error) -> Void in
+                self.loginCompletion!(nil, error)
+        })
+    }
+    
+    func getTimeline(params: NSDictionary = [:], completion: @escaping ([Tweet]?, Error?) -> ()) {
+        get("1.1/statuses/home_timeline.json",
+            parameters: params,
+            progress: nil,
+            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweets = Mapper<Tweet>().mapArray(JSONObject: response)
+                completion(tweets, nil)
+            },
+            failure: { (operation: URLSessionDataTask?, error) -> Void in
+                completion(nil, error)
         })
     }
 }
