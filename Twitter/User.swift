@@ -26,9 +26,10 @@ class User: Mappable {
     
     class var currentUser: User? {
         get {
-            guard let user = UserDefaults.standard.object(forKey: "currentUser") as? User else {
+            guard let JSONString = UserDefaults.standard.object(forKey: "currentUser") as? [String : Any] else {
                 return nil
             }
+            let user = Mapper<User>().map(JSON: JSONString)
             return user
         }
         set(user) {

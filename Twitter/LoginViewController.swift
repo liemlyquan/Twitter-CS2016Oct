@@ -8,32 +8,34 @@
 
 import UIKit
 import BDBOAuth1Manager
+import ObjectMapper
 
 class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        checkLogin()
     }
     
+    func checkLogin(){
+        guard
+            let accessTokenObject = UserDefaults.standard.object(forKey: "accessToken") as? Data,
+            let accessToken =  NSKeyedUnarchiver.unarchiveObject(with: accessTokenObject) as? BDBOAuth1Credential
+        else {
+            return
+        }
+        TwitterClient.sharedInstance?.requestSerializer.saveAccessToken(accessToken)
+        TwitterClient.sharedInstance?.requestCurrentUser()
+        self.performSegue(withIdentifier: "loginSegue", sender: self)
+    }
+
+    
     @IBAction func onTapLoginButton(sender: UIButton){
-//        TwitterClient.sharedInstance?.authenticate() { (token, error) in
-//            if let token = token, let authURL = URL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(token)") {
-//                UIApplication.shared.open(authURL)
-//            }
-//        }
         TwitterClient.sharedInstance?.loginWithCompletion {
             (user: User?, error: Error?)-> Void in
-            if user != nil {
+            if let _ = user {
                 self.performSegue(withIdentifier: "loginSegue", sender: self)
-            } else {
-                
-            }
+            } 
         }
     }
 }

@@ -21,22 +21,30 @@ class TweetTableViewCell: UITableViewCell {
     @IBOutlet weak var createdAtLabel: UILabel!
     @IBOutlet weak var tweetTextLabel: UILabel!
     @IBOutlet weak var userProfileImageView: UIImageView!
+    @IBOutlet weak var starButton: UIButton!
     
     var tweetData: Tweet! {
         didSet {
+            guard
+                let isFavorite = tweetData.favorited,
+                let user = tweetData.user,
+                let screenName = user.screenName,
+                let profileImageUrl = user.profileImageUrl,
+                let url = URL(string: profileImageUrl)
+            else
+            {
+                return
+            }
             nameLabel.text = tweetData.user?.name
-            screenNameLabel.text = tweetData.user?.screenName
+            screenNameLabel.text = "@\(screenName)"
             tweetTextLabel.text = tweetData.text
             
             createdAtLabel.text = tweetData.createdAt?.getTimeIntervalString()
-            guard
-                let user = tweetData.user,
-                let profileImageUrl = user.profileImageUrl,
-                let url = URL(string: profileImageUrl)
-            else {
-                return
+            if isFavorite {
+                activateStar()
             }
             userProfileImageView.setImageWith(url)
+            
         }
     }
 
@@ -51,14 +59,18 @@ class TweetTableViewCell: UITableViewCell {
     }
 
     @IBAction func onRetweetButtonTapped(_ sender: UIButton){
-        
+        delegate?.retweetButtonDidTapped!(self)
     }
     
     @IBAction func onFavoriteButtonTapped(_ sender: UIButton){
-        
+        delegate?.favoriteButtonDidTapped!(self)
     }
     
     @IBAction func onReplyButtonTapped(_ sender: UIButton){
-        
+        delegate?.replyButtonDidTapped!(self)
+    }
+    
+    func activateStar(){
+        starButton.setImage(#imageLiteral(resourceName: "star-filled"), for: .normal)
     }
 }

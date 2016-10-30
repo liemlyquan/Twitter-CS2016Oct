@@ -12,8 +12,13 @@ import ObjectMapper
 
 
 let twitterBaseURL = URL(string: "https://api.twitter.com")
-let twitterConsumerKey = "ptahrEGSLILH8kwUibjvGZjyL"
-let twitterConsumerSecret = "bogessNWSfZ3jyZEr3TguiPV1RzcUiYPATFL7uvVU4ywFHOMNo"
+//let twitterConsumerKey = "ptahrEGSLILH8kwUibjvGZjyL"
+//let twitterConsumerSecret = "bogessNWSfZ3jyZEr3TguiPV1RzcUiYPATFL7uvVU4ywFHOMNo"
+
+// For some reasons, if you encounter 401, check out the key
+let twitterConsumerKey = "JxUiG0fZyXliskmGJZYLjZcc4"
+let twitterConsumerSecret = "2rW7IMZQ9Iz73JTwm800PGoaRHTPa3Vz59nDRXx2I1NIEaiipo"
+
 
 class TwitterClient: BDBOAuth1SessionManager {
     // http://krakendev.io/blog/the-right-way-to-write-a-singleton
@@ -45,9 +50,54 @@ class TwitterClient: BDBOAuth1SessionManager {
         )
     }
     
-    func createTweetWithCompletion(params: NSDictionary, completion: @escaping (Tweet?, Error?) -> ()) {
+    func openUrl(url: URL){
+        fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: BDBOAuth1Credential(queryString: url.query), success: { (accessToken: BDBOAuth1Credential?) in
+            guard let accessToken = accessToken else {
+                return
+            }
+            self.requestSerializer.saveAccessToken(accessToken)
+            
+            let tokenData = NSKeyedArchiver.archivedData(withRootObject: accessToken)
+            UserDefaults.standard.set(tokenData, forKey: "accessToken")
+            self.requestCurrentUser()
+        }) { (error: Error?) -> Void in
+            print("Failed to get access token.")
+            self.loginCompletion?(nil, error)
+        }
+    }
+    
+    func requestCurrentUser(){
+        get(
+            "1.1/account/verify_credentials.json",
+            parameters: nil,
+            progress: nil,
+            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let user = Mapper<User>().map(JSONObject: response)
+                User.currentUser = user
+                self.loginCompletion?(user, nil)
+            },
+            failure: { (operation: URLSessionDataTask?, error) -> Void in
+                self.loginCompletion!(nil, error)
+        })
+    }
+    
+    func getTimeline(completion: @escaping ([Tweet]?, Error?) -> ()) {
+        get(
+            "1.1/statuses/home_timeline.json",
+            parameters: nil,
+            progress: nil,
+            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweets = Mapper<Tweet>().mapArray(JSONObject: response)
+                completion(tweets, nil)
+            },
+            failure: { (operation: URLSessionDataTask?, error) -> Void in
+                completion(nil, error)
+        })
+    }
+    
+    func createTweetWithCompletion(completion: @escaping (Tweet?, Error?) -> ()) {
         post("1.1/statuses/update.json",
-             parameters: params,
+             parameters: nil,
              progress: nil,
              success: { (operation: URLSessionDataTask, response: Any?) -> Void in
                 let tweet = Mapper<Tweet>().map(JSONObject: response)
@@ -74,9 +124,10 @@ class TwitterClient: BDBOAuth1SessionManager {
     }
     
     
-    func favoriteWithCompletion(id: Int?, completion: @escaping (Tweet?, Error?) -> ()) {
+    func favoriteWithCompletion(id: Int, completion: @escaping (Tweet?, Error?) -> ()) {
+        print(id)
         post("1.1/favorites/create.json",
-             parameters: NSDictionary(dictionary: ["id": id!]),
+             parameters: ["id": id],
              progress: nil,
              success: { (operation: URLSessionDataTask, response: Any?) -> Void in
                 let tweet = Mapper<Tweet>().map(JSONObject: response)
@@ -87,40 +138,5 @@ class TwitterClient: BDBOAuth1SessionManager {
                 completion(nil, error)
         })
     }
-    
-    
-    func openUrl(url: URL){
-        fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: BDBOAuth1Credential(queryString: url.query), success: { (accessToken: BDBOAuth1Credential?) in
-            print("Successfully got the access token!")
-            self.requestSerializer.saveAccessToken(accessToken)
-            self.requestCurrentUser()
-        }) { (error: Error?) -> Void in
-            print("Failed to get access token.")
-            self.loginCompletion?(nil, error)
-        }
-    }
-    
-    func requestCurrentUser(){
-        get("1.1/account/verify_credentials.json", parameters: nil, progress: nil,
-            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
-                let user = Mapper<User>().map(JSONObject: response)
-                User.currentUser = user
-                self.loginCompletion?(user, nil)
-            }, failure: { (operation: URLSessionDataTask?, error) -> Void in
-                self.loginCompletion!(nil, error)
-        })
-    }
-    
-    func getTimeline(params: NSDictionary = [:], completion: @escaping ([Tweet]?, Error?) -> ()) {
-        get("1.1/statuses/home_timeline.json",
-            parameters: params,
-            progress: nil,
-            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
-                let tweets = Mapper<Tweet>().mapArray(JSONObject: response)
-                completion(tweets, nil)
-            },
-            failure: { (operation: URLSessionDataTask?, error) -> Void in
-                completion(nil, error)
-        })
-    }
+
 }
