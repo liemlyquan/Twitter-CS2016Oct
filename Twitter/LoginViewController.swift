@@ -18,15 +18,7 @@ class LoginViewController: UIViewController {
     }
     
     func checkLogin(){
-        guard
-            let accessTokenObject = UserDefaults.standard.object(forKey: "accessToken") as? Data,
-            let accessToken =  NSKeyedUnarchiver.unarchiveObject(with: accessTokenObject) as? BDBOAuth1Credential
-        else {
-            return
-        }
-        TwitterClient.sharedInstance?.requestSerializer.saveAccessToken(accessToken)
-        TwitterClient.sharedInstance?.requestCurrentUser()
-        self.performSegue(withIdentifier: "loginSegue", sender: self)
+
     }
 
     

@@ -67,6 +67,15 @@ class MainViewController: UIViewController {
             vc.userData = User.currentUser
         }
     }
+    
+    @IBAction func onLogoutButtonTapped(_ sender: UIBarButtonItem){
+        User.currentUser = nil
+        TwitterClient.sharedInstance?.requestSerializer.removeAccessToken()
+        UserDefaults.standard.removeObject(forKey: "accessToken")
+        let loginViewController = self.storyboard!.instantiateViewController(withIdentifier: "LoginViewController")
+        UIApplication.shared.keyWindow?.rootViewController = loginViewController
+        
+    }
 }
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
@@ -95,7 +104,8 @@ extension MainViewController: TweetTableViewCellDelegate {
                 guard let _ = tweet else {
                     return
                 }
-                tweetTableViewCell.activateRetweet()
+                self.tweetList[indexPath.row].retweeted = true
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         )
     }
@@ -112,7 +122,8 @@ extension MainViewController: TweetTableViewCellDelegate {
                 guard let _ = tweet else {
                     return
                 }
-                tweetTableViewCell.activateStar()
+                self.tweetList[indexPath.row].favorited = true
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         )
     }

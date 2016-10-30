@@ -44,9 +44,13 @@ class TweetTableViewCell: UITableViewCell {
             createdAtLabel.text = tweetData.createdAt?.getTimeIntervalString()
             if isFavorite {
                 activateStar()
+            } else {
+                deactiveStar()
             }
             if isRetweeted {
                 activateRetweet()
+            } else {
+                deactiveRetweet()
             }
             userProfileImageView.setImageWith(url)
             

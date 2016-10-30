@@ -12,13 +12,13 @@ import ObjectMapper
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        checkLogin()
         return true
     }
+    
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -46,6 +46,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         TwitterClient.sharedInstance?.openUrl(url: url)
         return true
     }
+    
+    func checkLogin(){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        guard
+            let accessTokenObject = UserDefaults.standard.object(forKey: "accessToken") as? Data,
+            let accessToken =  NSKeyedUnarchiver.unarchiveObject(with: accessTokenObject) as? BDBOAuth1Credential
+        else {
+            return
+        }
+        let vc = storyboard.instantiateViewController(withIdentifier: "MainNavigationController")
+        TwitterClient.sharedInstance?.requestSerializer.saveAccessToken(accessToken)
+        TwitterClient.sharedInstance?.requestCurrentUser()
+        window?.rootViewController = vc
+    }
+    
 
 
 }

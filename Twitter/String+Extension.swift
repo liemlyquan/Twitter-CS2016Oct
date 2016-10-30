@@ -19,7 +19,6 @@ extension String {
         
         let interval = date.timeIntervalSinceNow
         let timeIntervalFormatter = TTTTimeIntervalFormatter()
-        
         guard let timeIntervalString = timeIntervalFormatter.string(forTimeInterval: interval) else {
             return ""
         }

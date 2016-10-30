@@ -31,7 +31,7 @@ approximately 7.5 hours in total
 * [PLAN] 2016/11/02, UI and error handling
 
 ### Walkthrough of the app
-![App Walkthrough](https://raw.githubusercontent.com/liemlyquan/Yelp-CS2016Oct/master/Yelp.gif)
+![App Walkthrough](https://raw.githubusercontent.com/liemlyquan/Twitter-CS2016Oct/master/Twitter.gif)
 
 GIF created with LiceCap.
 ## License
