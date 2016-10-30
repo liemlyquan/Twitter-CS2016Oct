@@ -3,7 +3,7 @@
 A Twitter clone application
 
 ### Time spent:
-approximately 7 hours in total
+approximately 7.5 hours in total
 
 ### Feature
 ##### Required
@@ -15,9 +15,9 @@ approximately 7 hours in total
 * [x] User can compose a new tweet by tapping on a compose button.
 * [x] User can tap on a tweet to view it, with controls to retweet, favorite, and reply.
 ##### Optional
-* [ ] When composing, you should have a countdown in the upper right for the tweet limit.
+* [x] When composing, you should have a countdown in the upper right for the tweet limit.
 * [ ] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
-* [ ] Retweeting and favoriting should increment the retweet and favorite count.
+* [x] Retweeting and favoriting should increment the retweet and favorite count.
 * [ ] User should be able to unretweet and unfavorite and should decrement the retweet and favorite count. Refer to this guide for help on implementing unretweeting.
 * [ ] Replies should be prefixed with the username and the reply_id should be set when posting the tweet,
 * [ ] User can load more tweets once they reach the bottom of the feed using infinite loading similar to the actual Twitter client.
@@ -26,7 +26,7 @@ approximately 7 hours in total
 * 2016/10/30 10:54, required features are done
 
 ### Reflection
-* 2016/10/30 10:54, the required function is done at the time of written. Again, I was not able implement more features due to high workload (or maybe just procrastination), anyway, since I committed to finish this in a better manner, this will be continued next week
+* 2016/10/30 10:54, the required function is done at the time of written. Again, I was not able implement more features due to high workload (or maybe just procrastination), anyway, since I committed to fully finish this, this will be continued next week
 * [PLAN] 2016/11/01, finish optional features  
 * [PLAN] 2016/11/02, UI and error handling
 

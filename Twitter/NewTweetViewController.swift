@@ -13,16 +13,24 @@ class NewTweetViewController: UIViewController {
     @IBOutlet weak var screenNameLabel: UILabel!
     @IBOutlet weak var tweetTextView: UITextView!
     @IBOutlet weak var userProfileImageView: UIImageView!
-
+    @IBOutlet weak var counterLabel: UIBarButtonItem!
+    
+    let tweeterCharacterLimit = 140
     var userData: User!
     
     override func viewDidLoad() {
+        initDelegate()
         initData()
         initUI()
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func initDelegate(){
+        tweetTextView.delegate = self
     }
     
     func initData(){
@@ -45,7 +53,6 @@ class NewTweetViewController: UIViewController {
     
     @IBAction func onCancelButtonTapped(_ sender: UIBarButtonItem){
         self.dismiss(animated: true, completion: nil)
-
     }
     
     @IBAction func onTweetButtonTapped(_ sender: UIBarButtonItem){
@@ -59,5 +66,18 @@ class NewTweetViewController: UIViewController {
                 }
             )
         }
+    }
+}
+
+extension NewTweetViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        counterLabel.title = "\(tweeterCharacterLimit - textView.text.characters.count)"
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if textView.text.characters.count < tweeterCharacterLimit {
+            return true
+        }
+        return false
     }
 }

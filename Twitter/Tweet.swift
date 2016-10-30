@@ -16,6 +16,8 @@ class Tweet : Mappable {
     var user: User?
     var favorited: Bool?
     var retweeted: Bool?
+    var retweetCount: Int?
+    var favoriteCount: Int?
     
     required init?(map: Map) {
         
@@ -28,5 +30,7 @@ class Tweet : Mappable {
         user <- map["user"]
         favorited <- map["favorited"]
         retweeted <- map["retweeted"]
+        retweetCount <- map["retweet_count"]
+        favoriteCount <- map["favorite_count"]
     }
 }

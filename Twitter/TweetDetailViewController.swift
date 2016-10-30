@@ -14,6 +14,9 @@ class TweetDetailViewController: UIViewController {
     @IBOutlet weak var tweetTextLabel: UILabel!
     @IBOutlet weak var createdAtLabel: UILabel!
     @IBOutlet weak var userProfileImageView: UIImageView!
+    @IBOutlet weak var retweetCountLabel: UILabel!
+    @IBOutlet weak var favoriteCountLabel: UILabel!
+
     @IBOutlet weak var starButton: UIButton!
     @IBOutlet weak var replyButton: UIButton!
     @IBOutlet weak var retweetButton: UIButton!
@@ -43,6 +46,8 @@ class TweetDetailViewController: UIViewController {
         guard
             let isFavorite = tweetData.favorited,
             let isRetweeted = tweetData.retweeted,
+            let favoriteCount = tweetData.favoriteCount,
+            let retweetCount = tweetData.retweetCount,
             let user = tweetData.user,
             let screenName = user.screenName,
             let profileImageUrl = user.profileImageUrl,
@@ -63,6 +68,8 @@ class TweetDetailViewController: UIViewController {
             activateRetweet()
         }
         userProfileImageView.setImageWith(url)
+        favoriteCountLabel.text = "\(favoriteCount)"
+        retweetCountLabel.text = "\(retweetCount)"
     }
     
     @IBAction func onRetweetButtonDidTapped(_ sender: UIButton) {
@@ -77,6 +84,9 @@ class TweetDetailViewController: UIViewController {
                     return
                 }
                 self.activateRetweet()
+                // MARK: any case it is not null at init, but is null now ??? No, so !
+                self.retweetCountLabel.text = "\(self.tweetData.retweetCount! + 1)"
+
             }
         )
     }
@@ -93,6 +103,9 @@ class TweetDetailViewController: UIViewController {
                     return
                 }
                 self.activateStar()
+                // MARK: any case it is not null at init, but is null now ??? No, so !s
+                self.favoriteCountLabel.text = "\(self.tweetData.favoriteCount! + 1)"
+
             }
         )
     }
