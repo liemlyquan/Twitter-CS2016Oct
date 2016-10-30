@@ -22,11 +22,13 @@ class TweetTableViewCell: UITableViewCell {
     @IBOutlet weak var tweetTextLabel: UILabel!
     @IBOutlet weak var userProfileImageView: UIImageView!
     @IBOutlet weak var starButton: UIButton!
+    @IBOutlet weak var retweetButton: UIButton!
     
     var tweetData: Tweet! {
         didSet {
             guard
                 let isFavorite = tweetData.favorited,
+                let isRetweeted = tweetData.retweeted,
                 let user = tweetData.user,
                 let screenName = user.screenName,
                 let profileImageUrl = user.profileImageUrl,
@@ -43,20 +45,15 @@ class TweetTableViewCell: UITableViewCell {
             if isFavorite {
                 activateStar()
             }
+            if isRetweeted {
+                activateRetweet()
+            }
             userProfileImageView.setImageWith(url)
             
         }
     }
 
     weak var delegate: TweetTableViewCellDelegate?
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
 
     @IBAction func onRetweetButtonTapped(_ sender: UIButton){
         delegate?.retweetButtonDidTapped!(self)
@@ -73,4 +70,17 @@ class TweetTableViewCell: UITableViewCell {
     func activateStar(){
         starButton.setImage(#imageLiteral(resourceName: "star-filled"), for: .normal)
     }
+    
+    func deactiveStar(){
+        starButton.setImage(#imageLiteral(resourceName: "star"), for: .normal)
+    }
+    
+    func activateRetweet(){
+        retweetButton.setImage(#imageLiteral(resourceName: "retweet-filled"), for: .normal)
+    }
+    
+    func deactiveRetweet(){
+        retweetButton.setImage(#imageLiteral(resourceName: "retweet"), for: .normal)
+    }
+    
 }

@@ -21,7 +21,6 @@ class MainViewController: UIViewController {
         initUI()
         refreshControl.addTarget(self, action: #selector(initData), for: .valueChanged)
         tableView.insertSubview(refreshControl, at: 0)
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,7 +48,25 @@ class MainViewController: UIViewController {
         })
     }
     
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "tweetDetailSegue" {
+            guard
+                let vc = segue.destination as? TweetDetailViewController,
+                let indexPath = tableView.indexPathForSelectedRow
+            else {
+                return
+            }
+            vc.tweetData = tweetList[indexPath.row]
+        } else if segue.identifier == "newTweetSegue" {
+            guard
+                let nvc = segue.destination as? UINavigationController,
+                let vc = nvc.topViewController as? NewTweetViewController
+            else {
+                return
+            }
+            vc.userData = User.currentUser
+        }
+    }
 }
 
 extension MainViewController: UITableViewDelegate, UITableViewDataSource {
@@ -75,7 +92,10 @@ extension MainViewController: TweetTableViewCellDelegate {
         TwitterClient.sharedInstance?.retweetWithCompletion(
             id: id,
             completion: { (tweet, error) in
-                
+                guard let _ = tweet else {
+                    return
+                }
+                tweetTableViewCell.activateRetweet()
             }
         )
     }
@@ -98,11 +118,12 @@ extension MainViewController: TweetTableViewCellDelegate {
     }
     
     func replyButtonDidTapped(_ tweetTableViewCell: TweetTableViewCell) {
-        guard
-            let indexPath = tableView.indexPath(for: tweetTableViewCell),
-            let id = tweetList[indexPath.row].id else {
-                return
-        }
-//        TwitterClient.sharedInstance.reply
+//      Uncomment later
+//        guard
+//            let indexPath = tableView.indexPath(for: tweetTableViewCell),
+//            let id = tweetList[indexPath.row].id else {
+//                return
+//        }
+        self.performSegue(withIdentifier: "newTweetSegue", sender: self)
     }
 }

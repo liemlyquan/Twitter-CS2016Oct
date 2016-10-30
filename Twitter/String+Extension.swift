@@ -25,4 +25,14 @@ extension String {
         }
         return timeIntervalString
     }
+    
+    func dateFormattedString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E MMM dd HH:mm:ss Z yyyy"
+        guard let date = dateFormatter.date(from: self) else {
+            return ""
+        }
+        dateFormatter.dateFormat = "yy/MM/dd HH:mm"
+        return dateFormatter.string(from: date)
+    }
 }

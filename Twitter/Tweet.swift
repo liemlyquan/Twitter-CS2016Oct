@@ -15,6 +15,7 @@ class Tweet : Mappable {
     var createdAt: String?
     var user: User?
     var favorited: Bool?
+    var retweeted: Bool?
     
     required init?(map: Map) {
         
@@ -26,5 +27,6 @@ class Tweet : Mappable {
         createdAt <- map["created_at"]
         user <- map["user"]
         favorited <- map["favorited"]
+        retweeted <- map["retweeted"]
     }
 }
