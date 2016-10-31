@@ -74,9 +74,19 @@ class TweetDetailViewController: UIViewController {
     
     @IBAction func onRetweetButtonDidTapped(_ sender: UIButton) {
         guard
-            let id = tweetData.id else {
+            let id = tweetData.id,
+            let retweeted = tweetData.retweeted
+        else {
                 return
         }
+        if retweeted {
+            self.unretweet(id: id)
+        } else {
+            self.retweet(id: id)
+        }
+    }
+    
+    func retweet(id: Int){
         TwitterClient.sharedInstance?.retweetWithCompletion(
             id: id,
             completion: { (tweet, error) in
@@ -84,15 +94,29 @@ class TweetDetailViewController: UIViewController {
                     return
                 }
                 self.activateRetweet()
+                self.tweetData.retweeted = true
                 // MARK: any case it is not null at init, but is null now ??? No? so !
                 self.tweetData.retweetCount = self.tweetData.retweetCount! + 1
                 self.retweetCountLabel.text = "\(self.tweetData.retweetCount!)"
-
             }
         )
     }
     
-
+    func unretweet(id: Int){
+        TwitterClient.sharedInstance?.removeTweetWithCompletion(
+            id: id,
+            completion: { (tweet, error) in
+                guard let _ = tweet else {
+                    return
+                }
+                self.activateRetweet()
+                self.tweetData.retweeted = false
+                // MARK: any case it is not null at init, but is null now ??? No? so !
+                self.tweetData.retweetCount = self.tweetData.retweetCount! - 1
+                self.retweetCountLabel.text = "\(self.tweetData.retweetCount!)"
+            }
+        )
+    }
     
     @IBAction func onFavoriteButtonDidTapped(_ sender: UIButton) {
         guard

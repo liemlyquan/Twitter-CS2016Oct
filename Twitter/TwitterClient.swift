@@ -84,7 +84,7 @@ class TwitterClient: BDBOAuth1SessionManager {
     func getTimeline(completion: @escaping ([Tweet]?, Error?) -> ()) {
         get(
             "1.1/statuses/home_timeline.json",
-            parameters: nil,
+            parameters: ["include_my_retweet": true],
             progress: nil,
             success: { (operation: URLSessionDataTask, response: Any?) -> Void in
                 let tweets = Mapper<Tweet>().mapArray(JSONObject: response)
@@ -111,6 +111,20 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     func retweetWithCompletion(id: Int, completion: @escaping (Tweet?, Error?) -> ()) {
         post("1.1/statuses/retweet/\(id).json",
+            parameters: nil,
+            progress: nil,
+            success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweet = Mapper<Tweet>().map(JSONObject: response)
+                completion(tweet, nil)
+            },
+            failure: { (operation: URLSessionDataTask?, error: Error) -> Void in
+                print("error retweeting")
+                completion(nil, error)
+        })
+    }
+    
+    func removeTweetWithCompletion(id: Int, completion: @escaping (Tweet?, Error?) -> ()) {
+        post("1.1/statuses/destroy/\(id).json",
             parameters: nil,
             progress: nil,
             success: { (operation: URLSessionDataTask, response: Any?) -> Void in

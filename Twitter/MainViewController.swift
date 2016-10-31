@@ -94,9 +94,22 @@ extension MainViewController: TweetTableViewCellDelegate {
     func retweetButtonDidTapped(_ tweetTableViewCell: TweetTableViewCell) {
         guard
             let indexPath = tableView.indexPath(for: tweetTableViewCell),
-            let id = tweetList[indexPath.row].id else {
+            let id = tweetList[indexPath.row].id,
+            let retweeted = tweetList[indexPath.row].retweeted
+        else {
             return
         }
+        if retweeted{
+            let tweet = tweetList[indexPath.row]
+            // This line of code is actually super dangerous, as long as Twitter change API, it crash
+            // TODO: change later
+            unretweet(id: tweetList[indexPath.row].currentUserRetweet!["id"] as! Int, indexPath: indexPath)
+        } else {
+            retweet(id: id, indexPath: indexPath)
+        }
+    }
+    
+    func retweet(id: Int, indexPath: IndexPath){
         TwitterClient.sharedInstance?.retweetWithCompletion(
             id: id,
             completion: { (tweet, error) in
@@ -104,6 +117,19 @@ extension MainViewController: TweetTableViewCellDelegate {
                     return
                 }
                 self.tweetList[indexPath.row].retweeted = true
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+        )
+    }
+    
+    func unretweet(id: Int, indexPath: IndexPath){
+        TwitterClient.sharedInstance?.removeTweetWithCompletion(
+            id: id,
+            completion: { (tweet, error) in
+                guard let _ = tweet else {
+                    return
+                }
+                self.tweetList[indexPath.row].retweeted = false
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         )
