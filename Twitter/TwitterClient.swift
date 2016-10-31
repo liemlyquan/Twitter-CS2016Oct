@@ -125,7 +125,6 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     
     func favoriteWithCompletion(id: Int, completion: @escaping (Tweet?, Error?) -> ()) {
-        print(id)
         post("1.1/favorites/create.json",
              parameters: ["id": id],
              progress: nil,
@@ -138,5 +137,20 @@ class TwitterClient: BDBOAuth1SessionManager {
                 completion(nil, error)
         })
     }
+    
+    func unfavoriteWithCompletion(id: Int, completion: @escaping (Tweet?, Error?) -> ()) {
+        post("1.1/favorites/destroy.json",
+             parameters: ["id": id],
+             progress: nil,
+             success: { (operation: URLSessionDataTask, response: Any?) -> Void in
+                let tweet = Mapper<Tweet>().map(JSONObject: response)
+                completion(tweet, nil)
+            },
+             failure: { (operation: URLSessionDataTask?, error: Error) -> Void in
+                print("error unfavoriting")
+                completion(nil, error)
+        })
+    }
+
 
 }

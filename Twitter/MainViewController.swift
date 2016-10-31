@@ -113,9 +113,19 @@ extension MainViewController: TweetTableViewCellDelegate {
     func favoriteButtonDidTapped(_ tweetTableViewCell: TweetTableViewCell) {
         guard
             let indexPath = tableView.indexPath(for: tweetTableViewCell),
-            let id = tweetList[indexPath.row].id else {
-                return
+            let id = tweetList[indexPath.row].id,
+            let favorited = tweetList[indexPath.row].favorited
+        else {
+            return
         }
+        if favorited {
+            unfavorite(id: id, indexPath: indexPath)
+        } else {
+            favorite(id: id, indexPath: indexPath)
+        }
+    }
+    
+    func favorite(id: Int, indexPath: IndexPath){
         TwitterClient.sharedInstance?.favoriteWithCompletion(
             id: id,
             completion: { (tweet, error) in
@@ -123,6 +133,19 @@ extension MainViewController: TweetTableViewCellDelegate {
                     return
                 }
                 self.tweetList[indexPath.row].favorited = true
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+        )
+    }
+    
+    func unfavorite(id: Int, indexPath: IndexPath){
+        TwitterClient.sharedInstance?.unfavoriteWithCompletion(
+            id: id,
+            completion: { (tweet, error) in
+                guard let _ = tweet else {
+                    return
+                }
+                self.tweetList[indexPath.row].favorited = false
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         )

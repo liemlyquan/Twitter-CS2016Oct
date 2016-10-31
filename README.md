@@ -14,6 +14,7 @@ approximately 7.5 hours in total
 * [x] User can pull to refresh
 * [x] User can compose a new tweet by tapping on a compose button.
 * [x] User can tap on a tweet to view it, with controls to retweet, favorite, and reply.
+
 ##### Optional
 * [x] When composing, you should have a countdown in the upper right for the tweet limit.
 * [ ] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.

@@ -84,18 +84,31 @@ class TweetDetailViewController: UIViewController {
                     return
                 }
                 self.activateRetweet()
-                // MARK: any case it is not null at init, but is null now ??? No, so !
-                self.retweetCountLabel.text = "\(self.tweetData.retweetCount! + 1)"
+                // MARK: any case it is not null at init, but is null now ??? No? so !
+                self.tweetData.retweetCount = self.tweetData.retweetCount! + 1
+                self.retweetCountLabel.text = "\(self.tweetData.retweetCount!)"
 
             }
         )
     }
     
+
+    
     @IBAction func onFavoriteButtonDidTapped(_ sender: UIButton) {
         guard
-            let id = tweetData.id else {
-                return
+            let id = tweetData.id,
+            let favorited = tweetData.favorited
+        else {
+            return
         }
+        if favorited {
+            self.unfavorite(id: id)
+        } else {
+            self.favorite(id: id)
+        }
+    }
+    
+    func favorite(id: Int){
         TwitterClient.sharedInstance?.favoriteWithCompletion(
             id: id,
             completion: { (tweet, error) in
@@ -103,12 +116,31 @@ class TweetDetailViewController: UIViewController {
                     return
                 }
                 self.activateStar()
-                // MARK: any case it is not null at init, but is null now ??? No, so !s
-                self.favoriteCountLabel.text = "\(self.tweetData.favoriteCount! + 1)"
-
+                self.tweetData.favorited = true
+                // MARK: any case it is not null at init, but is null now ??? No? so !
+                self.tweetData.favoriteCount = self.tweetData.favoriteCount! + 1
+                self.favoriteCountLabel.text = "\(self.tweetData.favoriteCount!)"
             }
         )
     }
+    
+    func unfavorite(id: Int){
+        TwitterClient.sharedInstance?.unfavoriteWithCompletion(
+            id: id,
+            completion: { (tweet, error) in
+                guard let _ = tweet else {
+                    return
+                }
+                self.deactivateStar()
+                self.tweetData.favorited = false
+                // MARK: any case it is not null at init, but is null now ??? No? so !
+                self.tweetData.favoriteCount = self.tweetData.favoriteCount! - 1
+                self.favoriteCountLabel.text = "\(self.tweetData.favoriteCount!)"
+            }
+        )
+    }
+    
+    
     
     
     @IBAction func replyButtonDidTapped(_ sender: UIButton) {
@@ -120,7 +152,7 @@ class TweetDetailViewController: UIViewController {
         starButton.setImage(#imageLiteral(resourceName: "star-filled"), for: .normal)
     }
     
-    func deactiveStar(){
+    func deactivateStar(){
         starButton.setImage(#imageLiteral(resourceName: "star"), for: .normal)
     }
     

@@ -8,4 +8,6 @@ target 'Twitter' do
   pod 'BDBOAuth1Manager', '2.0.0'
   pod 'ObjectMapper', '~> 2.2'
   pod 'FormatterKit', '~> 0.6.0'
+  pod 'SVProgressHUD'
+  pod 'DZNEmptyDataSet'
 end
