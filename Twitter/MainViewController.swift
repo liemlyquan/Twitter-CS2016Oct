@@ -21,9 +21,7 @@ class MainViewController: UIViewController {
         initUI()
         refreshControl.addTarget(self, action: #selector(initData), for: .valueChanged)
         tableView.insertSubview(refreshControl, at: 0)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
+        
         initData()
     }
     
@@ -64,6 +62,7 @@ class MainViewController: UIViewController {
             else {
                 return
             }
+            vc.delegate = self
             vc.userData = User.currentUser
         }
     }
@@ -159,5 +158,12 @@ extension MainViewController: TweetTableViewCellDelegate {
 //                return
 //        }
         self.performSegue(withIdentifier: "newTweetSegue", sender: self)
+    }
+}
+
+extension MainViewController: NewTweeViewControllerDelegate {
+    func tweetButtonDidTap(newTweetViewController: NewTweetViewController, tweet: Tweet) {
+        tweetList.insert(tweet,at: 0)
+        tableView.reloadData()
     }
 }

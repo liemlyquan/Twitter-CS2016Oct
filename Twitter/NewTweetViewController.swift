@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol NewTweeViewControllerDelegate {
+    func tweetButtonDidTap(newTweetViewController: NewTweetViewController, tweet: Tweet)
+}
+
 class NewTweetViewController: UIViewController {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var screenNameLabel: UILabel!
@@ -17,6 +21,8 @@ class NewTweetViewController: UIViewController {
     
     let tweeterCharacterLimit = 140
     var userData: User!
+    
+    var delegate: NewTweeViewControllerDelegate?
     
     override func viewDidLoad() {
         initDelegate()
@@ -61,7 +67,9 @@ class NewTweetViewController: UIViewController {
                 status: status,
                 completion: { (tweet, error) in
                     if let tweet = tweet {
+                        self.delegate?.tweetButtonDidTap(newTweetViewController: self, tweet: tweet)
                         self.dismiss(animated: true, completion: nil)
+                        
                     }
                 }
             )

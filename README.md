@@ -3,7 +3,7 @@
 A Twitter clone application
 
 ### Time spent:
-approximately 8 hours in total
+approximately 8.25 hours in total
 
 ### Feature
 ##### Required
@@ -17,7 +17,7 @@ approximately 8 hours in total
 
 ##### Optional
 * [x] When composing, you should have a countdown in the upper right for the tweet limit.
-* [ ] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
+* [x] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
 * [x] Retweeting and favoriting should increment the retweet and favorite count.
 * [ ] User should be able to unretweet and unfavorite and should decrement the retweet and favorite count. Refer to this guide for help on implementing unretweeting.
 * [ ] Replies should be prefixed with the username and the reply_id should be set when posting the tweet,
