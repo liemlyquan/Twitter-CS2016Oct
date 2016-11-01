@@ -63,7 +63,16 @@ class MainViewController: UIViewController {
                 return
             }
             vc.delegate = self
-            vc.userData = User.currentUser
+            vc.userData     = User.currentUser
+            guard let sender = sender as? TweetTableViewCell,
+                let indexPath = tableView.indexPath(for: sender),
+                let statusId = tweetList[indexPath.row].id,
+                let screenName = tweetList[indexPath.row].user?.screenName
+            else {
+                return
+            }
+            vc.replyToStatusId = statusId
+            vc.replyToScreenName = screenName
         }
     }
     
@@ -177,13 +186,12 @@ extension MainViewController: TweetTableViewCellDelegate {
     }
     
     func replyButtonDidTapped(_ tweetTableViewCell: TweetTableViewCell) {
-//      Uncomment later
-//        guard
-//            let indexPath = tableView.indexPath(for: tweetTableViewCell),
-//            let id = tweetList[indexPath.row].id else {
-//                return
-//        }
-        self.performSegue(withIdentifier: "newTweetSegue", sender: self)
+        guard
+            let indexPath = tableView.indexPath(for: tweetTableViewCell),
+            let id = tweetList[indexPath.row].id else {
+                return
+        }
+        self.performSegue(withIdentifier: "newTweetSegue", sender: tweetTableViewCell)
     }
 }
 

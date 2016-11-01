@@ -22,6 +22,11 @@ class NewTweetViewController: UIViewController {
     let tweeterCharacterLimit = 140
     var userData: User!
     
+    
+    
+    var replyToScreenName: String?
+    var replyToStatusId: Int?
+    
     var delegate: NewTweeViewControllerDelegate?
     
     override func viewDidLoad() {
@@ -55,6 +60,13 @@ class NewTweetViewController: UIViewController {
     
     func initUI(){
         tweetTextView.becomeFirstResponder()
+        
+        if let replyToStatusId = replyToStatusId,
+            let replyToScreenName = replyToScreenName
+        {
+            // TODO add code here
+            tweetTextView.text.append("@\(replyToScreenName) ")
+        }
     }
     
     @IBAction func onCancelButtonTapped(_ sender: UIBarButtonItem){
@@ -63,8 +75,15 @@ class NewTweetViewController: UIViewController {
     
     @IBAction func onTweetButtonTapped(_ sender: UIBarButtonItem){
         if let status = tweetTextView.text {
+            var parameters:Dictionary<String,AnyObject> = [:]
+            parameters["status"] = status as AnyObject
+            
+            if let replyToStatusId = replyToStatusId {
+                parameters["in_reply_to_status_id"] = replyToStatusId as AnyObject
+            }
+            
             TwitterClient.sharedInstance?.createTweetWithCompletion(
-                status: status,
+                parameters: parameters,
                 completion: { (tweet, error) in
                     if let tweet = tweet {
                         self.delegate?.tweetButtonDidTap(newTweetViewController: self, tweet: tweet)
@@ -83,9 +102,15 @@ extension NewTweetViewController: UITextViewDelegate {
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if textView.text.characters.count < tweeterCharacterLimit {
-            return true
+        if textView.text.characters.count >= tweeterCharacterLimit {
+            return false
         }
-        return false
+        if let replyToScreenName = replyToScreenName {
+            if 0 ... replyToScreenName.characters.count + 1 ~= range.location  {
+                return false
+            }
+        }
+
+        return true
     }
 }

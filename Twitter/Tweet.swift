@@ -19,6 +19,7 @@ class Tweet : Mappable {
     var retweetCount: Int?
     var favoriteCount: Int?
     var currentUserRetweet: NSDictionary?
+    var inReplyToStatusId: Int?
     
     required init?(map: Map) {
         
@@ -34,5 +35,6 @@ class Tweet : Mappable {
         retweetCount <- map["retweet_count"]
         favoriteCount <- map["favorite_count"]
         currentUserRetweet <- map["current_user_retweet"]
+        inReplyToStatusId <- map["in_reply_to_status_id"]
     }
 }

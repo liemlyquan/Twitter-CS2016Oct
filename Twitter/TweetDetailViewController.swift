@@ -39,6 +39,14 @@ class TweetDetailViewController: UIViewController {
                     return
             }
             vc.userData = User.currentUser
+            guard
+                let statusId = tweetData.id,
+                let screenName = tweetData.user?.screenName
+            else {
+                return
+            }
+            vc.replyToStatusId = statusId
+            vc.replyToScreenName = screenName
         }
     }
     

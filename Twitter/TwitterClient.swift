@@ -95,9 +95,9 @@ class TwitterClient: BDBOAuth1SessionManager {
         })
     }
     
-    func createTweetWithCompletion(status: String, completion: @escaping (Tweet?, Error?) -> ()) {
+    func createTweetWithCompletion(parameters: Dictionary<String, AnyObject>?, completion: @escaping (Tweet?, Error?) -> ()) {
         post("1.1/statuses/update.json",
-             parameters: ["status": status],
+             parameters: parameters,
              progress: nil,
              success: { (operation: URLSessionDataTask, response: Any?) -> Void in
                 let tweet = Mapper<Tweet>().map(JSONObject: response)

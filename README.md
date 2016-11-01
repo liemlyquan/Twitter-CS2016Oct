@@ -3,7 +3,7 @@
 A Twitter clone application
 
 ### Time spent:
-approximately 8.75 hours in total
+approximately 9.5 hours in total
 
 ### Feature
 ##### Required
